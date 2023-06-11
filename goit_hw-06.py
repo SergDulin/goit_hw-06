@@ -1,7 +1,7 @@
 import sys
 import os
 from pathlib import Path
-
+import random
 
 # Словник з категоріями файлів та їх розширеннями
 CATEGORIES = {
@@ -20,15 +20,29 @@ def normalize(name):
 
 # Функція для переміщення файлу у відповідну категорію
 def move_file(file: Path, root_dir: Path, category: str) -> None:
-    
+    target_dir = root_dir.joinpath(category)
+    if not target_dir.exists():
+        target_dir.mkdir()
+    new_name = target_dir.joinpath(normalize(file.stem) + file.suffix)
+    if new_name.exists():
+        new_name = new_name.with_name(
+            f"{new_name.stem}-{random.randint(0, 100)}{file.suffix}")
+    file.rename(new_name) 
 
 # Функція для визначення категорії файлу за його розширенням
 def get_category(file: Path) -> str:
-    
+    ext = file.suffix.lower()
+    for cat, exts in CATEGORIES.items():
+        if ext in exts:
+            return cat
+    return "Other"    
 
 # Функція для сортування файлів у кореневій папці
 def sort_folder(path: Path) -> None:
-    
+    for item in path.glob("**/*"):
+        if item.is_file():
+            category = get_category(item)
+            move_file(item, path, category)    
 
 # Функція для видалення порожніх папок
 def delete_empty_folders(path: Path) -> None:
