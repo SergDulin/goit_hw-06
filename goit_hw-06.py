@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 import random
 import re
+import patoolib
 
 # Словник з категоріями файлів та їх розширеннями
 CATEGORIES = {
@@ -63,7 +64,14 @@ def delete_empty_folders(path: Path) -> None:
 
 # Функція для розпакування архівів
 def unpack_archives(path: Path) -> None:
-    
+    archive_folder = path.joinpath("Archive")
+    for file_name in archive_folder.glob("*"):
+        if file_name.is_file():
+            extract_folder = file_name.stem
+            extract_path = archive_folder.joinpath(extract_folder)
+            extract_path.mkdir(exist_ok=True)
+
+            patoolib.extract_archive(str(file_name), outdir=str(extract_path))    
 
 # Основна функція
 def main():
@@ -71,4 +79,4 @@ def main():
 
 # Точка входу
 if __name__ == "__main__":
-    
+    print(main())
