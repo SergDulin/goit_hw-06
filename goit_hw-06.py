@@ -60,7 +60,12 @@ def sort_folder(path: Path) -> None:
 
 # Функція для видалення порожніх папок
 def delete_empty_folders(path: Path) -> None:
-    
+    for folder in list(path.glob("**/*"))[::-1]:
+        if folder.is_dir() and not any(folder.iterdir()):
+            is_category_folder = any(cat in CATEGORIES.keys() for cat in folder.name)
+            if not is_category_folder:
+                folder.rmdir()
+
 
 # Функція для розпакування архівів
 def unpack_archives(path: Path) -> None:
@@ -75,7 +80,19 @@ def unpack_archives(path: Path) -> None:
 
 # Основна функція
 def main():
-   
+    try:
+        path = Path(input("Enter the root folder path: "))
+    except ValueError:
+        return "Invalid path"
+
+    if not path.exists():
+        return f"Folder with path {path} does not exist."
+
+    sort_folder(path)
+    unpack_archives(path)
+    delete_empty_folders(path)
+
+    return "All done"
 
 # Точка входу
 if __name__ == "__main__":
