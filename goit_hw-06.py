@@ -78,11 +78,8 @@ def unpack_archives(path: Path) -> None:
             patoolib.extract_archive(str(file_name), outdir=str(extract_path))    
 
 # Основна функція
-def main():
-    try:
-        path = Path(input("Enter the root folder path: "))
-    except ValueError:
-        return "Invalid path"
+def main(root_folder):
+    path = Path(root_folder)
 
     if not path.exists():
         return f"Folder with path {path} does not exist."
@@ -95,4 +92,9 @@ def main():
 
 # Точка входу
 if __name__ == "__main__":
-    print(main())
+    if len(sys.argv) < 2:
+        print("Usage: python script.py <root_folder>")
+    else:
+        root_folder = sys.argv[1]
+        print(main(root_folder))
+
